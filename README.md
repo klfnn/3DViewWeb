@@ -40,7 +40,7 @@ Open the URL that Vite prints (usually `http://localhost:5173`).
 
 ## Credits
 
-- **NewJeans Lightstick 3D Model** by [sujinee_0](https://sketchfab.com/sujinee_0) on [Sketchfab](https://sketchfab.com/3d-models/newjeans-lightstick-3d-model-29df76a434054fca864c040e30c607ef)
+- **NewJeans Lightstick 3D Model** by [david](https://sketchfab.com/davideapsketch) on [Sketchfab](https://sketchfab.com/3d-models/newjeans-lightstick-3d-model-29df76a434054fca864c040e30c607ef)
   - Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ## License
