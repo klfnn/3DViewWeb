@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>3D Room - Face Tracking</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --depth: 600px;
+                --grid: 60px;
+
+                /* 빛반사(글레어) 대비용: 그리드/테두리/비네팅 */
+                --grid-soft: rgba(10, 10, 10, 0.22);
+                --grid-strong: rgba(10, 10, 10, 0.34);
+                --grid-soft-w: 2px;
+                --grid-strong-w: 2px;
+                --wall-border: rgba(0, 0, 0, 0.18);
+                --wall-shade: rgba(0, 0, 0, 0.08);
+
+                /* 방 면 색상(서로 구분되게) */
+                /* 정면(뒷벽): 흰색 */
+                --back-a: #ffffff;
+                --back-b: #ffffff;
+                /* 왼쪽: 초록 */
+                --left-a: #bdf0c4;
+                --left-b: #e9ffec;
+                /* 오른쪽: 빨강 */
+                --right-a: #ffbcbc;
+                --right-b: #ffe8e8;
+                /* 바닥: 노랑 */
+                --floor-a: #ffe08a;
+                --floor-b: #fff2b3;
+                /* 천장: 파랑 */
+                --ceiling-a: #bcd4ff;
+                --ceiling-b: #e9f0ff;
+            }
+
+            body {
+                overflow: hidden;
+                background: #f5f5f5;
+            }
+
+            #container {
+                width: 100vw;
+                height: 100vh;
+                perspective: 1000px;
+                perspective-origin: 50% 50%;
+                overflow: hidden;
+                background: #f5f5f5;
+            }
+
+            #room {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                transform-style: preserve-3d;
+                transform: translateZ(0);
+            }
+
+            .wall {
+                position: absolute;
+                backface-visibility: visible;
+                box-shadow: inset 0 0 0 2px var(--wall-border), inset 0 0 140px var(--wall-shade);
+            }
+
+            /* 뒷벽 */
+            .back-wall {
+                width: 100vw;
+                height: 100vh;
+                left: 0;
+                top: 0;
+                transform: translateZ(calc(-1 * var(--depth)));
+                background: #fff;
+            }
+
+            .back-wall::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w)),
+                    linear-gradient(180deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w));
+                background-size: var(--grid) var(--grid);
+                mix-blend-mode: multiply;
+            }
+
+            /* 바닥 */
+            .floor {
+                width: 100vw;
+                height: var(--depth);
+                left: 0;
+                bottom: 0;
+                transform-origin: bottom center;
+                transform: rotateX(-90deg);
+                background: linear-gradient(to top, var(--floor-a) 0%, var(--floor-b) 100%);
+            }
+
+            .floor::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                        90deg,
+                        var(--grid-strong) var(--grid-strong-w),
+                        transparent var(--grid-strong-w)
+                    ),
+                    linear-gradient(180deg, var(--grid-strong) var(--grid-strong-w), transparent var(--grid-strong-w));
+                background-size: var(--grid) var(--grid);
+                mix-blend-mode: multiply;
+            }
+
+            /* 천장 */
+            .ceiling {
+                width: 100vw;
+                height: var(--depth);
+                left: 0;
+                top: 0;
+                transform-origin: top center;
+                transform: rotateX(90deg);
+                background: linear-gradient(to bottom, var(--ceiling-b) 0%, var(--ceiling-a) 100%);
+            }
+
+            .ceiling::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w)),
+                    linear-gradient(180deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w));
+                background-size: var(--grid) var(--grid);
+                mix-blend-mode: multiply;
+            }
+
+            /* 왼쪽 벽 */
+            .left-wall {
+                width: var(--depth);
+                height: 100vh;
+                top: 0;
+                left: 0;
+                transform-origin: left center;
+                transform: rotateY(90deg);
+                background: linear-gradient(to right, var(--left-a) 0%, var(--left-b) 100%);
+            }
+
+            .left-wall::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w)),
+                    linear-gradient(180deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w));
+                background-size: var(--grid) var(--grid);
+                mix-blend-mode: multiply;
+            }
+
+            /* 오른쪽 벽 */
+            .right-wall {
+                width: var(--depth);
+                height: 100vh;
+                top: 0;
+                right: 0;
+                transform-origin: right center;
+                transform: rotateY(-90deg);
+                background: linear-gradient(to left, var(--right-a) 0%, var(--right-b) 100%);
+            }
+
+            .right-wall::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w)),
+                    linear-gradient(180deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w));
+                background-size: var(--grid) var(--grid);
+                mix-blend-mode: multiply;
+            }
+
+            #container::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                box-shadow: inset 0 0 140px rgba(0, 0, 0, 0.16);
+            }
+
+            /* 3D 모델 캔버스 */
+            #model-canvas {
+                position: absolute;
+                left: 50%;
+                top: 55%;
+                transform: translate(-50%, -50%) translateZ(calc(-1 * var(--depth) / 2));
+                pointer-events: none;
+                width: clamp(350px, 55vmin, 700px);
+                height: clamp(450px, 70vmin, 900px);
+            }
+
+            /* 비디오 */
+            #video-container {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                background: #000;
+            }
+
+            #video {
+                width: 160px;
+                height: 120px;
+                transform: scaleX(-1);
+                display: block;
+            }
+
+            /* 상태 */
+            #status {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                color: #333;
+                font-size: 14px;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 12px 16px;
+                border-radius: 8px;
+                z-index: 1000;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            #status .on {
+                color: #22c55e;
+            }
+            #status .off {
+                color: #ef4444;
+            }
+
+            #calibrate-btn {
+                margin-top: 8px;
+                padding: 6px 10px;
+                font-size: 12px;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                background: #222;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            #calibrate-btn:hover {
+                background: #444;
+            }
+
+            #stop-btn {
+                margin-top: 8px;
+                margin-left: 8px;
+                padding: 6px 10px;
+                font-size: 12px;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                background: #666;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            #stop-btn:hover {
+                background: #888;
+            }
+
+            /* 시작 버튼 */
+            #start-btn {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                padding: 20px 50px;
+                font-size: 18px;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                background: #222;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                z-index: 1001;
+            }
+
+            #start-btn:hover {
+                background: #444;
+            }
+        </style>
+    </head>
+    <body>
+        <button id="start-btn">시작하기</button>
+
+        <div id="container">
+            <div id="room">
+                <div class="wall back-wall"></div>
+                <div class="wall floor"></div>
+                <div class="wall ceiling"></div>
+                <div class="wall left-wall"></div>
+                <div class="wall right-wall"></div>
+
+                <canvas id="model-canvas"></canvas>
+            </div>
+        </div>
+
+        <div id="video-container" style="display: none">
+            <video id="video" autoplay playsinline muted></video>
+        </div>
+
+        <div id="status">
+            상태: <span id="tracking-status" class="off">대기 중</span><br />
+            <span id="position-info"></span>
+            <div>
+                <button id="calibrate-btn" type="button">정면 설정</button>
+                <button id="stop-btn" type="button">카메라 끄기</button>
+            </div>
+        </div>
+
+        <script type="module" src="/src/main.js"></script>
+    </body>
+</html>
