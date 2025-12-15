@@ -35,6 +35,7 @@ Open the URL that Vite prints (usually `http://localhost:5173`).
 ## Notes
 
 - Camera access only works on HTTPS or localhost
+- Chromium-based browsers recommended (Chrome, Edge, etc.) for best performance
 - If motion feels reversed, adjust `parallaxScaleX` / `parallaxScaleY` values in `src/main.js`
 
 ## Credits
