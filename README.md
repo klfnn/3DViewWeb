@@ -4,17 +4,17 @@ A face-tracking parallax 3D room demo. Track your face with the camera and move 
 
 ## Features
 
-- **MediaPipe FaceLandmarker** - Real-time face landmark tracking (468 points)
-- **Parallax Effect** - Perspective changes based on head position
-- **Three.js 3D Model** - NewJeans lightstick GLB model rendering
-- **CSS 3D Room** - Each wall has a different color (green/blue/red/yellow/white)
-- **60fps Smooth Animation** - Velocity-based predictive interpolation
+- Real-time face tracking using MediaPipe (468 landmark points)
+- Head position mapped to perspective origin for parallax effect
+- 3D model rendering with Three.js (GLB format)
+- CSS 3D room with colored walls
+- Smooth 60fps animation with velocity prediction
 
 ## Tech Stack
 
-- [Vite](https://vitejs.dev/) - Build tool
-- [MediaPipe Tasks Vision](https://developers.google.com/mediapipe/solutions/vision/face_landmarker) - Face detection
-- [Three.js](https://threejs.org/) - 3D rendering
+-   [Vite](https://vitejs.dev/) - Build tool
+-   [MediaPipe Tasks Vision](https://developers.google.com/mediapipe/solutions/vision/face_landmarker) - Face detection
+-   [Three.js](https://threejs.org/) - 3D rendering
 
 ## Getting Started
 
@@ -34,14 +34,14 @@ Open the URL that Vite prints (usually `http://localhost:5173`).
 
 ## Notes
 
-- Camera access only works on HTTPS or localhost
-- Chromium-based browsers recommended (Chrome, Edge, etc.) for best performance
-- If motion feels reversed, adjust `parallaxScaleX` / `parallaxScaleY` values in `src/main.js`
+-   Camera access only works on HTTPS or localhost
+-   Chromium-based browsers recommended (Chrome, Edge, etc.) for best performance
+-   If motion feels reversed, adjust `parallaxScaleX` / `parallaxScaleY` values in `src/main.js`
 
 ## Credits
 
-- **NewJeans Lightstick 3D Model** by [david](https://sketchfab.com/davideapsketch) on [Sketchfab](https://sketchfab.com/3d-models/newjeans-lightstick-3d-model-29df76a434054fca864c040e30c607ef)
-  - Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+-   **NewJeans Lightstick 3D Model** by [david](https://sketchfab.com/davideapsketch) on [Sketchfab](https://sketchfab.com/3d-models/newjeans-lightstick-3d-model-29df76a434054fca864c040e30c607ef)
+    -   Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ## License
 
