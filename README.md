@@ -15,7 +15,6 @@ A face-tracking parallax 3D room demo. Track your face with the camera and move 
 - [Vite](https://vitejs.dev/) - Build tool
 - [MediaPipe Tasks Vision](https://developers.google.com/mediapipe/solutions/vision/face_landmarker) - Face detection
 - [Three.js](https://threejs.org/) - 3D rendering
-- CSS 3D Transforms - Room effect
 
 ## Getting Started
 
