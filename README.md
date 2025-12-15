@@ -1,43 +1,30 @@
 # 3DViewWeb - Face Tracking 3D Room
 
-A face-tracking parallax 3D room demo. Track your face with the camera and move your viewpoint to make the flat screen look like a 3D window.
+얼굴을 인식해서 시점을 움직이면 평면 화면이 3D 창문처럼 보이는 패럴랙스 데모.
 
 ## Features
 
-### 🎯 Core
-- Real-time face tracking using MediaPipe (468 landmark points)
-- Head position mapped to perspective origin for parallax effect
-- Smooth 60fps animation with velocity prediction
-- CSS 3D room with colorful gradient walls
+### Core
+- MediaPipe 실시간 얼굴 인식
+- 머리 위치에 따른 시점 변화 (패럴랙스 효과)
+- CSS 3D 방 구현
 
-### 🎭 3D Model
-- Three.js 3D model rendering
-- **VRM model support** (anime/VTuber characters)
-- GLB/GLTF model support
-- Model controls: Y position, rotation angle (with 45° snapping), scale
-- Auto-rotation toggle
-- Model shadow with dynamic shadow plane
+### 3D Model
+- VRM 모델 지원 (애니메이션 캐릭터)
+- GLB/GLTF 모델 지원
+- 모델 위치, 회전, 크기 조절
 
-### 💃 Animation
-- **VRMA animation support** (VRM native animation)
-- **BVH motion capture support**
-- **FBX animation support** with bone retargeting
-- Animation auto-reapply on model reload
+### Animation
+- VRMA 애니메이션 지원
+- BVH 모션 캡처 지원
+- FBX 애니메이션 지원
 
-### 🎨 Customization (Settings Panel)
-- **Custom 3D model upload** (.vrm, .glb, .gltf)
-- **Custom motion/animation upload** (.vrma, .bvh, .fbx, .glb)
-- **Background options**:
-  - Image
-  - Video
-  - YouTube (embedded in back wall)
-- **Viewport background color** picker
-- **Space effects**:
-  - 🪩 Club (laser + mirror ball)
-  - ✨ Firefly (floating lights)
-  - ❄️ Snow
-  - 💖 Hearts
-  - ⭐ Stars
+### Customization
+- 커스텀 3D 모델 업로드
+- 커스텀 모션 업로드
+- 배경 설정 (이미지, 비디오, YouTube)
+- 뷰포트 배경색 변경
+- 공간 이펙트 (클럽, 반딧불, 눈, 하트, 별)
 
 ## Tech Stack
 
@@ -45,47 +32,34 @@ A face-tracking parallax 3D room demo. Track your face with the camera and move 
 - [MediaPipe Tasks Vision](https://developers.google.com/mediapipe/solutions/vision/face_landmarker) - Face detection
 - [Three.js](https://threejs.org/) - 3D rendering
 - [@pixiv/three-vrm](https://github.com/pixiv/three-vrm) - VRM model support
-- [@pixiv/three-vrm-animation](https://github.com/pixiv/three-vrm) - VRM animation support
 
 ## Getting Started
 
-```bash
+\`\`\`bash
 npm install
 npm run dev
-```
-
-Open the URL that Vite prints (usually `http://localhost:5173`).
+\`\`\`
 
 ## Usage
 
-1. Click the **"시작하기"** button
-2. Allow camera permission
-3. Move your face left/right/up/down to see the 3D effect
-4. Click **"기준점 설정"** to set current position as the baseline
-5. Click **"⚙️ 설정"** to open settings panel for customization
-
-### Settings Panel
-- **3D 모델**: Upload custom VRM/GLB model, adjust position/rotation/scale
-- **모션**: Upload animation files for VRM characters
-- **배경**: Set background image, video, or YouTube
-- **뷰포트 배경**: Change viewport background color
-- **공간 이펙트**: Add particle effects
-
-## Notes
-
-- Camera access only works on HTTPS or localhost
-- Chromium-based browsers recommended (Chrome, Edge, etc.) for best performance
-- VRM models work best with VRMA animation files
-- BVH/FBX animations are auto-retargeted to VRM bone structure
+1. "시작하기" 버튼 클릭
+2. 카메라 권한 허용
+3. 얼굴을 좌우/상하로 움직여서 3D 효과 확인
+4. "기준점 설정"으로 현재 위치를 기준점으로 설정
+5. "설정" 버튼으로 커스터마이징
 
 ## Supported File Formats
 
-| Type | Formats |
-|------|---------|
-| 3D Model | `.vrm`, `.glb`, `.gltf` |
-| Animation | `.vrma`, `.bvh`, `.fbx`, `.glb` |
-| Background Image | All image formats |
-| Background Video | All video formats |
+| Type       | Formats                         |
+| ---------- | ------------------------------- |
+| 3D Model   | \`.vrm\`, \`.glb\`, \`.gltf\`         |
+| Animation  | \`.vrma\`, \`.bvh\`, \`.fbx\`, \`.glb\` |
+| Background | 이미지, 비디오, YouTube         |
+
+## Notes
+
+- 카메라는 HTTPS 또는 localhost에서만 작동
+- Chrome, Edge 등 Chromium 기반 브라우저 권장
 
 ## Credits
 
