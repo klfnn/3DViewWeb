@@ -13,6 +13,7 @@ const trackingStatus = document.getElementById('tracking-status');
 const positionInfo = document.getElementById('position-info');
 const calibrateBtn = document.getElementById('calibrate-btn');
 const stopBtn = document.getElementById('stop-btn');
+const toggleVideoCheckbox = document.getElementById('toggle-video-checkbox');
 const modelCanvas = document.getElementById('model-canvas');
 
 let isTracking = false;
@@ -307,6 +308,8 @@ let lastUiMs = 0;
 const uiEveryMs = 120;
 let lastFacePresent = false;
 let lastVideoTime = -1;
+let lastDetectMs = 0;
+const detectIntervalMs = 33; // ~30fps 감지 (매 프레임 대신)
 
 function detectLoop() {
     if (!detectActive || !isTracking) return;
@@ -315,6 +318,14 @@ function detectLoop() {
         requestAnimationFrame(detectLoop);
         return;
     }
+
+    // 감지 간격 제한 (~30fps)
+    const now = performance.now();
+    if (now - lastDetectMs < detectIntervalMs) {
+        requestAnimationFrame(detectLoop);
+        return;
+    }
+    lastDetectMs = now;
 
     // 같은 프레임이면 스킵
     if (video.currentTime === lastVideoTime) {
@@ -491,7 +502,36 @@ document.addEventListener('mousemove', (e) => {
 
 calibrateBtn.addEventListener('click', () => {
     if (!isTracking) return;
-    baselineMm = { x: lastHeadMm.x, y: lastHeadMm.y, set: true };
+    // 현재 스무딩된 위치를 기준점으로 설정
+    baselineMm = { x: smoothHeadX, y: smoothHeadY, set: true };
+    // 타겟, 스무딩, 속도 모두 리셋
+    targetX = targetY = 0;
+    smoothX = smoothY = 0;
+    displayX = displayY = 0;
+    velocityX = velocityY = 0;
+});
+
+toggleVideoCheckbox.addEventListener('change', () => {
+    videoContainer.style.display = toggleVideoCheckbox.checked ? 'block' : 'none';
+});
+
+// 크레딧 모달
+const creditLink = document.getElementById('credit-link');
+const creditModal = document.getElementById('credit-modal');
+const creditCloseBtn = document.getElementById('credit-close-btn');
+
+creditLink.addEventListener('click', () => {
+    creditModal.classList.add('show');
+});
+
+creditCloseBtn.addEventListener('click', () => {
+    creditModal.classList.remove('show');
+});
+
+creditModal.addEventListener('click', (e) => {
+    if (e.target === creditModal) {
+        creditModal.classList.remove('show');
+    }
 });
 
 stopBtn.addEventListener('click', stopCamera);

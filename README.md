@@ -4,11 +4,11 @@ A face-tracking parallax 3D room demo. Track your face with the camera and move 
 
 ## Features
 
-- Real-time face tracking using MediaPipe (468 landmark points)
-- Head position mapped to perspective origin for parallax effect
-- 3D model rendering with Three.js (GLB format)
-- CSS 3D room with colored walls
-- Smooth 60fps animation with velocity prediction
+-   Real-time face tracking using MediaPipe (468 landmark points)
+-   Head position mapped to perspective origin for parallax effect
+-   3D model rendering with Three.js (GLB format)
+-   CSS 3D room with colored walls
+-   Smooth 60fps animation with velocity prediction
 
 ## Tech Stack
 

@@ -275,6 +275,63 @@
                 background: #888;
             }
 
+            /* 토글 스위치 */
+            .toggle-container {
+                display: flex;
+                align-items: center;
+                margin-top: 10px;
+                gap: 8px;
+            }
+
+            .toggle-label {
+                font-size: 12px;
+                color: #333;
+            }
+
+            .toggle-switch {
+                position: relative;
+                width: 40px;
+                height: 20px;
+            }
+
+            .toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .toggle-slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: 0.3s;
+                border-radius: 20px;
+            }
+
+            .toggle-slider:before {
+                position: absolute;
+                content: '';
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: 0.3s;
+                border-radius: 50%;
+            }
+
+            .toggle-switch input:checked + .toggle-slider {
+                background-color: #22c55e;
+            }
+
+            .toggle-switch input:checked + .toggle-slider:before {
+                transform: translateX(20px);
+            }
+
             /* 시작 버튼 */
             #start-btn {
                 position: fixed;
@@ -293,6 +350,85 @@
             }
 
             #start-btn:hover {
+                background: #444;
+            }
+
+            /* 크레딧 */
+            #credit-link {
+                position: fixed;
+                bottom: 12px;
+                right: 12px;
+                font-size: 11px;
+                color: #333;
+                background: white;
+                padding: 4px 10px;
+                border-radius: 4px;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                cursor: pointer;
+                z-index: 100;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            #credit-link:hover {
+                background: #f5f5f5;
+            }
+
+            /* 모달 */
+            #credit-modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 2000;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #credit-modal.show {
+                display: flex;
+            }
+
+            #credit-modal-content {
+                background: white;
+                padding: 24px 32px;
+                border-radius: 12px;
+                max-width: 400px;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            }
+
+            #credit-modal-content h3 {
+                margin: 0 0 16px 0;
+                font-size: 18px;
+            }
+
+            #credit-modal-content a {
+                color: #2563eb;
+            }
+
+            #credit-modal-content ul {
+                margin: 12px 0;
+                padding-left: 20px;
+            }
+
+            #credit-modal-content li {
+                margin: 8px 0;
+            }
+
+            #credit-close-btn {
+                margin-top: 16px;
+                padding: 8px 20px;
+                background: #222;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            #credit-close-btn:hover {
                 background: #444;
             }
         </style>
@@ -321,7 +457,47 @@
             <span id="position-info"></span>
             <div>
                 <button id="calibrate-btn" type="button">정면 설정</button>
-                <button id="stop-btn" type="button">카메라 끄기</button>
+                <button id="stop-btn" type="button">종료</button>
+            </div>
+            <div class="toggle-container">
+                <span class="toggle-label">카메라 미리보기</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggle-video-checkbox" checked />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <span id="credit-link">크레딧</span>
+
+        <div id="credit-modal">
+            <div id="credit-modal-content">
+                <h3>크레딧</h3>
+                <ul>
+                    <li>
+                        <strong>제작</strong><br />
+                        <a href="https://github.com/klfnn" target="_blank">Klfn</a>
+                    </li>
+                    <li>
+                        <strong>NewJeans Lightstick 3D 모델</strong><br />
+                        by <a href="https://sketchfab.com/davideapsketch" target="_blank">david</a> on
+                        <a
+                            href="https://sketchfab.com/3d-models/newjeans-lightstick-3d-model-29df76a434054fca864c040e30c607ef"
+                            target="_blank"
+                            >Sketchfab</a
+                        ><br />
+                        <small>CC BY 4.0 라이선스</small>
+                    </li>
+                    <li>
+                        <strong>얼굴 인식</strong><br />
+                        <a href="https://developers.google.com/mediapipe" target="_blank">MediaPipe</a> by Google
+                    </li>
+                    <li>
+                        <strong>3D 렌더링</strong><br />
+                        <a href="https://threejs.org/" target="_blank">Three.js</a>
+                    </li>
+                </ul>
+                <button id="credit-close-btn">닫기</button>
             </div>
         </div>
 
