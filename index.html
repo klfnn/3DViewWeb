@@ -16,29 +16,29 @@
                 --grid: 60px;
 
                 /* 빛반사(글레어) 대비용: 그리드/테두리/비네팅 */
-                --grid-soft: rgba(10, 10, 10, 0.22);
-                --grid-strong: rgba(10, 10, 10, 0.34);
-                --grid-soft-w: 2px;
+                --grid-soft: rgba(10, 10, 10, 0.15);
+                --grid-strong: rgba(10, 10, 10, 0.25);
+                --grid-soft-w: 1px;
                 --grid-strong-w: 2px;
-                --wall-border: rgba(0, 0, 0, 0.18);
-                --wall-shade: rgba(0, 0, 0, 0.08);
+                --wall-border: rgba(0, 0, 0, 0.12);
+                --wall-shade: rgba(0, 0, 0, 0.05);
 
-                /* 방 면 색상(서로 구분되게) */
-                /* 정면(뒷벽): 흰색 */
-                --back-a: #ffffff;
-                --back-b: #ffffff;
+                /* 방 면 색상 - 창문 밖에서 보는 느낌 */
+                /* 정면(뒷벽): 청록/시안 */
+                --back-a: #4dd9e6;
+                --back-b: #7ae8f0;
                 /* 왼쪽: 초록 */
-                --left-a: #bdf0c4;
-                --left-b: #e9ffec;
-                /* 오른쪽: 빨강 */
-                --right-a: #ffbcbc;
-                --right-b: #ffe8e8;
-                /* 바닥: 노랑 */
-                --floor-a: #ffe08a;
-                --floor-b: #fff2b3;
-                /* 천장: 파랑 */
-                --ceiling-a: #bcd4ff;
-                --ceiling-b: #e9f0ff;
+                --left-a: #4ade80;
+                --left-b: #86efac;
+                /* 오른쪽: 보라/마젠타 */
+                --right-a: #c084fc;
+                --right-b: #d8b4fe;
+                /* 바닥: 노랑/녹색 */
+                --floor-a: #a3e635;
+                --floor-b: #bef264;
+                /* 천장: 파랑/청록 */
+                --ceiling-a: #38bdf8;
+                --ceiling-b: #7dd3fc;
             }
 
             body {
@@ -71,12 +71,14 @@
 
             /* 뒷벽 */
             .back-wall {
+                position: relative;
                 width: 100vw;
                 height: 100vh;
                 left: 0;
                 top: 0;
                 transform: translateZ(calc(-1 * var(--depth)));
-                background: #fff;
+                background: linear-gradient(to bottom, var(--back-b) 0%, var(--back-a) 100%);
+                overflow: hidden;
             }
 
             .back-wall::before {
@@ -88,6 +90,10 @@
                     linear-gradient(180deg, var(--grid-soft) var(--grid-soft-w), transparent var(--grid-soft-w));
                 background-size: var(--grid) var(--grid);
                 mix-blend-mode: multiply;
+            }
+
+            .back-wall.no-grid::before {
+                display: none;
             }
 
             /* 바닥 */
@@ -193,12 +199,23 @@
             /* 3D 모델 캔버스 */
             #model-canvas {
                 position: absolute;
-                left: 50%;
-                top: 55%;
-                transform: translate(-50%, -50%) translateZ(calc(-1 * var(--depth) / 2));
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                transform: translateZ(calc(-1 * var(--depth) / 2));
                 pointer-events: none;
-                width: clamp(350px, 55vmin, 700px);
-                height: clamp(450px, 70vmin, 900px);
+            }
+
+            /* 이펙트 캔버스 */
+            #effect-canvas {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 10;
             }
 
             /* 비디오 */
@@ -431,6 +448,283 @@
             #credit-close-btn:hover {
                 background: #444;
             }
+
+            /* 설정 패널 */
+            #settings-btn {
+                position: fixed;
+                bottom: 12px;
+                left: 12px;
+                font-size: 11px;
+                color: #333;
+                background: white;
+                padding: 4px 10px;
+                border-radius: 4px;
+                border: none;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                cursor: pointer;
+                z-index: 100;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            #settings-btn:hover {
+                background: #f5f5f5;
+            }
+
+            #settings-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: auto;
+                background: transparent;
+                z-index: 2000;
+                pointer-events: none;
+            }
+
+            #settings-modal.show {
+                display: block;
+            }
+
+            #settings-modal-content {
+                pointer-events: auto;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 20px 24px;
+                border-radius: 0 12px 12px 0;
+                width: 320px;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+                height: 100%;
+                overflow-y: auto;
+            }
+
+            #settings-modal-content h3 {
+                margin: 0 0 20px 0;
+                font-size: 18px;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 12px;
+            }
+
+            .settings-section {
+                margin-bottom: 24px;
+            }
+
+            .settings-section h4 {
+                font-size: 14px;
+                color: #666;
+                margin: 0 0 12px 0;
+                font-weight: 600;
+            }
+
+            .settings-row {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 10px;
+            }
+
+            .settings-row label:first-child {
+                flex: 0 0 70px;
+                font-size: 12px;
+            }
+
+            .settings-row .toggle-switch {
+                flex: 0 0 40px;
+            }
+
+            .settings-row select,
+            .settings-row input[type='text'],
+            .settings-row input[type='url'] {
+                flex: 1;
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-size: 13px;
+                font-family: inherit;
+            }
+
+            .settings-row input[type='file'] {
+                flex: 1;
+                font-size: 12px;
+            }
+
+            .settings-row input[type='range'] {
+                flex: 1;
+                height: 6px;
+                -webkit-appearance: none;
+                background: #ddd;
+                border-radius: 3px;
+                outline: none;
+            }
+
+            .settings-row input[type='range']::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 16px;
+                height: 16px;
+                background: #22c55e;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+
+            .settings-row input[type='range']::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+                background: #22c55e;
+                border-radius: 50%;
+                cursor: pointer;
+                border: none;
+            }
+
+            .settings-row span {
+                flex: 0 0 40px;
+                font-size: 12px;
+                color: #666;
+                text-align: right;
+            }
+
+            .file-input-wrapper {
+                flex: 1;
+                position: relative;
+            }
+
+            .file-input-wrapper input[type='file'] {
+                width: 100%;
+            }
+
+            .file-name {
+                font-size: 11px;
+                color: #666;
+                margin-top: 4px;
+            }
+
+            .preset-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .preset-btn {
+                padding: 12px 8px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                background: #f9f9f9;
+                cursor: pointer;
+                text-align: center;
+                transition: all 0.2s;
+                font-family: inherit;
+            }
+
+            .preset-btn:hover {
+                border-color: #aaa;
+                background: #f0f0f0;
+            }
+
+            .preset-btn.active {
+                border-color: #22c55e;
+                background: #ecfdf5;
+            }
+
+            .preset-btn .preset-icon {
+                font-size: 24px;
+                margin-bottom: 4px;
+            }
+
+            .preset-btn .preset-name {
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+            .preset-btn .preset-desc {
+                font-size: 9px;
+                color: #888;
+                margin-top: 2px;
+            }
+
+            .settings-buttons {
+                display: flex;
+                gap: 10px;
+                margin-top: 20px;
+                padding-top: 16px;
+                border-top: 1px solid #eee;
+            }
+
+            .settings-buttons button {
+                flex: 1;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-family: inherit;
+            }
+
+            #settings-apply-btn {
+                background: #22c55e;
+                color: white;
+            }
+
+            #settings-apply-btn:hover {
+                background: #16a34a;
+            }
+
+            #settings-reset-btn {
+                background: #eee;
+                color: #333;
+            }
+
+            #settings-reset-btn:hover {
+                background: #ddd;
+            }
+
+            #settings-close-btn {
+                background: #222;
+                color: white;
+            }
+
+            #settings-close-btn:hover {
+                background: #444;
+            }
+
+            .motion-section {
+                display: none;
+            }
+
+            .motion-section.show {
+                display: block;
+            }
+
+            /* 배경 타입 선택 */
+            .bg-type-tabs {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+
+            .bg-type-tab {
+                padding: 6px 14px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                background: #f9f9f9;
+                cursor: pointer;
+                font-size: 12px;
+                font-family: inherit;
+            }
+
+            .bg-type-tab.active {
+                background: #222;
+                color: white;
+                border-color: #222;
+            }
+
+            .bg-input-group {
+                display: none;
+            }
+
+            .bg-input-group.show {
+                display: block;
+            }
         </style>
     </head>
     <body>
@@ -445,6 +739,7 @@
                 <div class="wall right-wall"></div>
 
                 <canvas id="model-canvas"></canvas>
+                <canvas id="effect-canvas"></canvas>
             </div>
         </div>
 
@@ -469,6 +764,149 @@
         </div>
 
         <span id="credit-link">크레딧</span>
+        <button id="settings-btn">⚙️ 설정</button>
+
+        <!-- 설정 모달 -->
+        <div id="settings-modal">
+            <div id="settings-modal-content">
+                <h3>⚙️ 사용자 설정</h3>
+
+                <!-- 3D 모델 -->
+                <div class="settings-section">
+                    <h4>🎭 3D 모델</h4>
+                    <div class="settings-row">
+                        <label>모델 유형</label>
+                        <select id="model-type-select">
+                            <option value="object">오브젝트</option>
+                            <option value="human">사람 (캐릭터)</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <label>모델 파일</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="model-file-input" accept=".glb,.gltf,.vrm" />
+                            <div class="file-name" id="model-file-name">기본 모델 사용 중</div>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <label>자동 회전</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="model-rotate-checkbox" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <label>상하 위치</label>
+                        <input type="range" id="model-y-slider" min="-2" max="2" step="0.1" value="0" />
+                        <span id="model-y-value">0</span>
+                    </div>
+                    <div class="settings-row">
+                        <label>회전 각도</label>
+                        <input type="range" id="model-angle-slider" min="0" max="360" step="1" value="0" />
+                        <span id="model-angle-value">0°</span>
+                    </div>
+                    <div class="settings-row">
+                        <label>크기</label>
+                        <input type="range" id="model-scale-slider" min="0.5" max="3" step="0.1" value="1" />
+                        <span id="model-scale-value">1x</span>
+                    </div>
+                </div>
+
+                <!-- 모션 (사람 모델일 때만) -->
+                <div class="settings-section motion-section" id="motion-section">
+                    <h4>💃 모션 (애니메이션)</h4>
+                    <div class="settings-row">
+                        <label>모션 파일</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="motion-file-input" accept=".vrma,.fbx,.bvh,.glb,.vmd" />
+                            <div class="file-name" id="motion-file-name">모션 없음</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 배경 -->
+                <div class="settings-section">
+                    <h4>🖼️ 배경</h4>
+                    <div class="bg-type-tabs">
+                        <button class="bg-type-tab active" data-type="none">없음</button>
+                        <button class="bg-type-tab" data-type="image">이미지</button>
+                        <button class="bg-type-tab" data-type="video">비디오</button>
+                        <button class="bg-type-tab" data-type="youtube">YouTube</button>
+                    </div>
+                    <div class="bg-input-group" id="bg-none-group"></div>
+                    <div class="bg-input-group" id="bg-image-group">
+                        <div class="settings-row">
+                            <label>이미지 파일</label>
+                            <input type="file" id="bg-image-input" accept="image/*" />
+                        </div>
+                    </div>
+                    <div class="bg-input-group" id="bg-video-group">
+                        <div class="settings-row">
+                            <label>비디오 파일</label>
+                            <input type="file" id="bg-video-input" accept="video/*" />
+                        </div>
+                    </div>
+                    <div class="bg-input-group" id="bg-youtube-group">
+                        <div class="settings-row">
+                            <label>YouTube URL</label>
+                            <input type="url" id="bg-youtube-input" placeholder="https://youtube.com/watch?v=..." />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 뷰포트 배경색 -->
+                <div class="settings-section">
+                    <h4>🎨 뷰포트 배경</h4>
+                    <div class="settings-row">
+                        <label>배경색</label>
+                        <input type="color" id="viewport-bg-color" value="#f5f5f5" />
+                        <span id="viewport-bg-value">#f5f5f5</span>
+                    </div>
+                </div>
+
+                <!-- 공간 이펙트 -->
+                <div class="settings-section">
+                    <h4>✨ 공간 이펙트</h4>
+                    <div class="preset-grid">
+                        <button class="preset-btn active" data-preset="none">
+                            <div class="preset-icon">⭕</div>
+                            <div class="preset-name">없음</div>
+                        </button>
+                        <button class="preset-btn" data-preset="club">
+                            <div class="preset-icon">🪩</div>
+                            <div class="preset-name">클럽</div>
+                            <div class="preset-desc">미러볼 + 레이저</div>
+                        </button>
+                        <button class="preset-btn" data-preset="firefly">
+                            <div class="preset-icon">✨</div>
+                            <div class="preset-name">반딧불</div>
+                            <div class="preset-desc">떠다니는 빛</div>
+                        </button>
+                        <button class="preset-btn" data-preset="snow">
+                            <div class="preset-icon">❄️</div>
+                            <div class="preset-name">눈</div>
+                            <div class="preset-desc">눈송이 내림</div>
+                        </button>
+                        <button class="preset-btn" data-preset="hearts">
+                            <div class="preset-icon">💖</div>
+                            <div class="preset-name">하트</div>
+                            <div class="preset-desc">하트 파티클</div>
+                        </button>
+                        <button class="preset-btn" data-preset="stars">
+                            <div class="preset-icon">⭐</div>
+                            <div class="preset-name">별빛</div>
+                            <div class="preset-desc">반짝이는 별</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-buttons">
+                    <button id="settings-reset-btn">초기화</button>
+                    <button id="settings-apply-btn">적용</button>
+                    <button id="settings-close-btn">닫기</button>
+                </div>
+            </div>
+        </div>
 
         <div id="credit-modal">
             <div id="credit-modal-content">
